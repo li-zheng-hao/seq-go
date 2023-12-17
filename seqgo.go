@@ -2,16 +2,16 @@ package seqgo
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 // SeqHook sends logs to Seq via HTTP.
 type SeqHook struct {
-	endpoint string
-	apiKey   string
-	levels   []logrus.Level
+	endpoint      string
+	apiKey        string
+	levels        []logrus.Level
+	messageSender *MessageBatchSender
 }
 
 func (hook *SeqHook) Levels() []logrus.Level {
@@ -28,8 +28,9 @@ var SeqHookOption *SeqHookOptions = &SeqHookOptions{
 		logrus.FatalLevel,
 		logrus.PanicLevel,
 	},
-	period:    2,
-	batchSize: 10,
+	period:       2,
+	batchSize:    10,
+	maxLimitSize: 10000,
 }
 
 func NewSeqHook(configure func(*SeqHookOptions)) *SeqHook {
@@ -40,13 +41,16 @@ func NewSeqHook(configure func(*SeqHookOptions)) *SeqHook {
 
 	SeqHookOption.endpoint = endpoint
 
-	go ScheduleSend()
-
-	return &SeqHook{
-		endpoint: endpoint,
-		apiKey:   SeqHookOption.apiKey,
-		levels:   SeqHookOption.levels,
+	seqHook := &SeqHook{
+		endpoint:      endpoint,
+		apiKey:        SeqHookOption.apiKey,
+		levels:        SeqHookOption.levels,
+		messageSender: NewMessageBatchSender(SeqHookOption.maxLimitSize),
 	}
+
+	go ScheduleSend(seqHook.messageSender)
+
+	return seqHook
 }
 
 // Fire sends a log entry to Seq.
@@ -68,17 +72,18 @@ func (hook *SeqHook) Fire(entry *logrus.Entry) error {
 		return err
 	}
 
-	Push(data)
+	hook.messageSender.Push(data)
 
 	return nil
 }
 
 // SeqHookOptions collects non-default Seq hook options.
 type SeqHookOptions struct {
-	apiKey    string
-	levels    []logrus.Level
-	period    int
-	fields    map[string]string
-	batchSize int64
-	endpoint  string
+	apiKey       string
+	levels       []logrus.Level
+	period       int
+	fields       map[string]string
+	batchSize    int
+	endpoint     string
+	maxLimitSize uint32
 }
