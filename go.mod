@@ -1,4 +1,4 @@
-module github/li-zheng-hao/seqgo
+module github.com/li-zheng-hao/seqgo
 
 go 1.21.1
 
