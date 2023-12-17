@@ -4,15 +4,21 @@ A Seq hook for Logrus
 
 # Usage
 
+```shell
+go get github.com/li-zheng-hao/seqgo
+```
+
 ```go
+package main
+
 import (
+	"github.com/li-zheng-hao/seqgo"
 	log "github.com/sirupsen/logrus"
-	. "github/li-zheng-hao/seqgo"
 	"time"
 )
 
 func main() {
-	hook := NewSeqHook(func(options *SeqHookOptions) {
+	hook := seqgo.NewSeqHook(func(options *seqgo.SeqHookOptions) {
 		options.BatchSize = 10
 		options.Fields = map[string]string{
 			"System": "Test",
@@ -30,6 +36,7 @@ func main() {
 	hook.Flush()
 
 }
+
 ```
 
 # Reference Resources
