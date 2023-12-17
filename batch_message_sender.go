@@ -36,7 +36,7 @@ func (ms *MessageBatchSender) Send() {
 
 	defer ms.messagePool.Put(combinedMessage)
 
-	for i := 0; i < SeqHookOption.batchSize; i++ {
+	for i := 0; i < SeqHookOption.BatchSize; i++ {
 		msg, ok, _ := ms.messageQueue.Get()
 		if !ok {
 			break
@@ -50,15 +50,15 @@ func (ms *MessageBatchSender) Send() {
 
 	str := combinedMessage.String()
 
-	req, err := http.NewRequest("POST", SeqHookOption.endpoint, strings.NewReader(str))
+	req, err := http.NewRequest("POST", SeqHookOption.Endpoint, strings.NewReader(str))
 	if err != nil {
 		fmt.Errorf("error seq post %v", err)
 	}
 
 	req.Header.Add("Content-Type", "application/vnd.serilog.clef")
 
-	if SeqHookOption.apiKey != "" {
-		req.Header.Add("X-Seq-ApiKey", SeqHookOption.apiKey)
+	if SeqHookOption.ApiKey != "" {
+		req.Header.Add("X-Seq-ApiKey", SeqHookOption.ApiKey)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
@@ -93,7 +93,7 @@ func ScheduleSend(sender *MessageBatchSender) {
 			if SeqHookOption == nil {
 				time.Sleep(time.Duration(timeSec) * time.Second)
 			} else {
-				timeSec = SeqHookOption.period
+				timeSec = SeqHookOption.Period
 			}
 
 			time.Sleep(time.Duration(timeSec) * time.Second)

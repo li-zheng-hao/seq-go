@@ -8,12 +8,12 @@ import (
 
 func TestLog(t *testing.T) {
 	hook := NewSeqHook(func(options *SeqHookOptions) {
-		options.batchSize = 10
-		options.fields = map[string]string{
+		options.BatchSize = 10
+		options.Fields = map[string]string{
 			"System": "Test",
 			"Env":    "Dev",
 		}
-		options.endpoint = "http://localhost:5341"
+		options.Endpoint = "http://localhost:5341"
 
 	})
 	log.AddHook(hook)
@@ -28,12 +28,12 @@ func TestLog(t *testing.T) {
 
 func TestLogWithAdditionProperty(t *testing.T) {
 	hook := NewSeqHook(func(options *SeqHookOptions) {
-		options.batchSize = 10
-		options.fields = map[string]string{
+		options.BatchSize = 10
+		options.Fields = map[string]string{
 			"System": "Test",
 			"Env":    "Dev",
 		}
-		options.endpoint = "http://localhost:5341"
+		options.Endpoint = "http://localhost:5341"
 
 	})
 	log.AddHook(hook)

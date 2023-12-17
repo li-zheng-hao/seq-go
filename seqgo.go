@@ -19,7 +19,7 @@ func (hook *SeqHook) Levels() []logrus.Level {
 }
 
 var SeqHookOption *SeqHookOptions = &SeqHookOptions{
-	levels: []logrus.Level{
+	Levels: []logrus.Level{
 		logrus.TraceLevel,
 		logrus.DebugLevel,
 		logrus.InfoLevel,
@@ -28,24 +28,24 @@ var SeqHookOption *SeqHookOptions = &SeqHookOptions{
 		logrus.FatalLevel,
 		logrus.PanicLevel,
 	},
-	period:       2,
-	batchSize:    10,
-	maxLimitSize: 10000,
+	Period:       2,
+	BatchSize:    10,
+	MaxLimitSize: 10000,
 }
 
 func NewSeqHook(configure func(*SeqHookOptions)) *SeqHook {
 
 	configure(SeqHookOption)
 
-	endpoint := fmt.Sprintf("%v/api/events/raw", SeqHookOption.endpoint)
+	endpoint := fmt.Sprintf("%v/api/events/raw", SeqHookOption.Endpoint)
 
-	SeqHookOption.endpoint = endpoint
+	SeqHookOption.Endpoint = endpoint
 
 	seqHook := &SeqHook{
 		endpoint:      endpoint,
-		apiKey:        SeqHookOption.apiKey,
-		levels:        SeqHookOption.levels,
-		messageSender: NewMessageBatchSender(SeqHookOption.maxLimitSize),
+		apiKey:        SeqHookOption.ApiKey,
+		levels:        SeqHookOption.Levels,
+		messageSender: NewMessageBatchSender(SeqHookOption.MaxLimitSize),
 	}
 
 	go ScheduleSend(seqHook.messageSender)
@@ -63,7 +63,7 @@ func (hook *SeqHook) Fire(entry *logrus.Entry) error {
 			logrus.FieldKeyTime:  "@t",
 		},
 	}
-	for k, v := range SeqHookOption.fields {
+	for k, v := range SeqHookOption.Fields {
 		entry.Data[k] = v
 	}
 	data, err := formatter.Format(entry)
@@ -79,11 +79,11 @@ func (hook *SeqHook) Fire(entry *logrus.Entry) error {
 
 // SeqHookOptions collects non-default Seq hook options.
 type SeqHookOptions struct {
-	apiKey       string
-	levels       []logrus.Level
-	period       int
-	fields       map[string]string
-	batchSize    int
-	endpoint     string
-	maxLimitSize uint32
+	ApiKey       string
+	Levels       []logrus.Level
+	Period       int
+	Fields       map[string]string
+	BatchSize    int
+	Endpoint     string
+	MaxLimitSize uint32
 }
