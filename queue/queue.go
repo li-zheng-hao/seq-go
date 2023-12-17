@@ -1,4 +1,3 @@
-// esQueue
 package queue
 
 import (

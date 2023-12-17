@@ -2,7 +2,7 @@ package seqgo
 
 import (
 	"fmt"
-	"github/li-zheng-hao/seqgo/queue"
+	"github.com/li-zheng-hao/seqgo/queue"
 	"io"
 	"net/http"
 	"strings"
