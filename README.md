@@ -2,47 +2,34 @@
 
 A Seq hook for Logrus
 
-# Sample
+# Usage
 
 ```go
-
 import (
 	log "github.com/sirupsen/logrus"
-	"testing"
+	. "github/li-zheng-hao/seqgo"
+	"time"
 )
 
-func TestLog(t *testing.T) {
-	log.AddHook(NewSeqHook(func(options *SeqHookOptions) {
-		options.fields = map[string]string{
+func main() {
+	hook := NewSeqHook(func(options *SeqHookOptions) {
+		options.BatchSize = 10
+		options.Fields = map[string]string{
 			"System": "Test",
 			"Env":    "Dev",
 		}
-		options.endpoint = "http://localhost:5341"
+		options.Endpoint = "http://localhost:5341"
 
-	}))
-	log.Info("hello world1")
-	log.Info("hello world2")
-	log.Info("hello world3")
-    
-    // must flush when exit
-	Flush()
+	})
+	log.AddHook(hook)
+
+	for i := 0; i < 10; i++ {
+		log.Info(time.Now().String())
+
+	}
+	hook.Flush()
+
 }
-
-func TestLogWithAdditionProperty(t *testing.T) {
-	log.AddHook(NewSeqHook(func(options *SeqHookOptions) {
-		options.fields = map[string]string{
-			"System": "Test",
-			"Env":    "Dev",
-		}
-		options.endpoint = "http://localhost:5341"
-
-	}))
-	log.WithField("NewField", "test").Info("hello world1")
-
-    // must flush when exit
-	Flush()
-}
-
 ```
 
 # Reference Resources
